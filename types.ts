@@ -70,3 +70,10 @@ export interface Subscription {
   trial_end?: string;
   prices?: Price;
 }
+
+export interface Playlist {
+  id: string;
+  user_id: string;
+  name: string;
+  image_path: string;
+}

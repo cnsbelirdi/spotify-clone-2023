@@ -28,6 +28,8 @@ const Header: React.FC<HeaderProps> = ({ children, className }) => {
   const supabaseClient = useSupabaseClient();
   const { user } = useUser();
 
+  const username = user?.email?.substring(0, user?.email?.indexOf("@"));
+
   const handleLogout = async () => {
     const { error } = await supabaseClient.auth.signOut();
     player.reset();
@@ -125,9 +127,10 @@ const Header: React.FC<HeaderProps> = ({ children, className }) => {
               </Button>
               <Button
                 onClick={() => router.push("/account")}
-                className="bg-white"
+                className="bg-white px-6 py-2 flex items-center gap-x-2"
               >
                 <FaUserAlt />
+                <p>{username}</p>
               </Button>
             </div>
           ) : (

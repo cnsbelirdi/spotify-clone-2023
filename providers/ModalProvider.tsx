@@ -6,6 +6,7 @@ import AuthModal from "@/components/AuthModal";
 import SubscribeModal from "@/components/SubscribeModal";
 import UploadModal from "@/components/UploadModal";
 import { ProductWithPrice } from "@/types";
+import PlaylistModal from "@/components/PlaylistModal";
 
 interface ModalProviderProps {
   products: ProductWithPrice[];
@@ -27,6 +28,7 @@ const ModalProvider: React.FC<ModalProviderProps> = ({ products }) => {
       <AuthModal />
       <SubscribeModal products={products} />
       <UploadModal />
+      <PlaylistModal />
     </>
   );
 };

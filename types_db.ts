@@ -62,6 +62,68 @@ export interface Database {
           }
         ]
       }
+      playlist_songs: {
+        Row: {
+          created_at: string | null
+          playlist_id: number
+          song_id: number
+        }
+        Insert: {
+          created_at?: string | null
+          playlist_id?: number
+          song_id: number
+        }
+        Update: {
+          created_at?: string | null
+          playlist_id?: number
+          song_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "playlist_songs_playlist_id_fkey"
+            columns: ["playlist_id"]
+            referencedRelation: "playlists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "playlist_songs_song_id_fkey"
+            columns: ["song_id"]
+            referencedRelation: "songs"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      playlists: {
+        Row: {
+          created_at: string | null
+          id: number
+          image_path: string | null
+          name: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          image_path?: string | null
+          name?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          image_path?: string | null
+          name?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "playlists_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       prices: {
         Row: {
           active: boolean | null

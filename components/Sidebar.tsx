@@ -1,24 +1,24 @@
 "use client";
 
 import { HiHome } from "react-icons/hi";
-import { BiSearch } from "react-icons/bi";
+import { BiSearch, BiMusic } from "react-icons/bi";
 import { twMerge } from "tailwind-merge";
 import { usePathname } from "next/navigation";
 
-import { Song } from "@/types";
+import { Playlist, Song } from "@/types";
 import usePlayer from "@/hooks/usePlayer";
 
 import SidebarItem from "./SidebarItem";
 import Box from "./Box";
-import Library from "./Library";
+import Playlists from "./Playlists";
 import { useMemo } from "react";
 
 interface SidebarProps {
   children: React.ReactNode;
-  songs: Song[];
+  playlists: Playlist[];
 }
 
-const Sidebar = ({ children, songs }: SidebarProps) => {
+const Sidebar = ({ children, playlists }: SidebarProps) => {
   const pathname = usePathname();
   const player = usePlayer();
 
@@ -27,7 +27,7 @@ const Sidebar = ({ children, songs }: SidebarProps) => {
       {
         icon: HiHome,
         label: "Home",
-        active: pathname !== "/search",
+        active: pathname === "/",
         href: "/",
       },
       {
@@ -35,6 +35,12 @@ const Sidebar = ({ children, songs }: SidebarProps) => {
         label: "Search",
         href: "/search",
         active: pathname === "/search",
+      },
+      {
+        icon: BiMusic,
+        label: "Library",
+        href: "/library",
+        active: pathname === "/library",
       },
     ],
     [pathname]
@@ -70,7 +76,7 @@ const Sidebar = ({ children, songs }: SidebarProps) => {
           </div>
         </Box>
         <Box className="overflow-y-auto h-full">
-          <Library songs={songs} />
+          <Playlists playlists={playlists} />
         </Box>
       </div>
       <main className="h-full flex-1 overflow-y-auto py-2">{children}</main>

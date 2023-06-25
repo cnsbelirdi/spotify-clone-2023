@@ -10,6 +10,7 @@ import SupabaseProvider from "@/providers/SupabaseProvider";
 import Player from "@/components/Player";
 
 import "./globals.css";
+import getPlaylists from "@/actions/getPlaylists";
 
 const font = Figtree({ subsets: ["latin"] });
 
@@ -27,6 +28,7 @@ export default async function RootLayout({
 }) {
   const products = await getActiveProductsWithPrices();
   const userSongs = await getSongsByUserId();
+  const userPlaylists = await getPlaylists();
 
   return (
     <html lang="en">
@@ -35,7 +37,7 @@ export default async function RootLayout({
         <SupabaseProvider>
           <UserProvider>
             <ModalProvider products={products} />
-            <Sidebar songs={userSongs}>{children}</Sidebar>
+            <Sidebar playlists={userPlaylists}>{children}</Sidebar>
             <Player />
           </UserProvider>
         </SupabaseProvider>
