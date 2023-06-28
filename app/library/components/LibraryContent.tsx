@@ -1,5 +1,6 @@
 "use client";
 
+import Dropdown from "@/components/Dropdown";
 import LikeButton from "@/components/LikeButton";
 import MediaItem from "@/components/MediaItem";
 import useAuthModal from "@/hooks/useAuthModal";
@@ -7,14 +8,18 @@ import useOnPlay from "@/hooks/useOnPlay";
 import useSubscribeModal from "@/hooks/useSubscribeModal";
 import useUploadModal from "@/hooks/useUploadModal";
 import { useUser } from "@/hooks/useUser";
-import { Song } from "@/types";
+import { Playlist, Song } from "@/types";
 import { AiOutlinePlus } from "react-icons/ai";
 
 interface LibraryContentProps {
   songs: Song[];
+  playlists: Playlist[];
 }
 
-const LibraryContent: React.FC<LibraryContentProps> = ({ songs }) => {
+const LibraryContent: React.FC<LibraryContentProps> = ({
+  songs,
+  playlists,
+}) => {
   const { user, subscription } = useUser();
   const uploadModal = useUploadModal();
   const authModal = useAuthModal();
@@ -62,6 +67,7 @@ const LibraryContent: React.FC<LibraryContentProps> = ({ songs }) => {
                 <MediaItem onClick={(id: string) => onPlay(id)} data={song} />
               </div>
               <LikeButton songId={song.id} />
+              <Dropdown songId={song.id} playlists={playlists} />
             </div>
           ))}
       </div>

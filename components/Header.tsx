@@ -7,7 +7,7 @@ import { FaUserAlt } from "react-icons/fa";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { toast } from "react-hot-toast";
 import { HiHome } from "react-icons/hi";
-import { BiSearch } from "react-icons/bi";
+import { BiSearch, BiMusic } from "react-icons/bi";
 
 import useAuthModal from "@/hooks/useAuthModal";
 import { useUser } from "@/hooks/useUser";
@@ -117,6 +117,22 @@ const Header: React.FC<HeaderProps> = ({ children, className }) => {
             "
           >
             <BiSearch className="text-black" size={20} />
+          </button>
+          <button
+            onClick={() => router.push("/library")}
+            className="
+              rounded-full 
+              p-2 
+              bg-white 
+              flex 
+              items-center 
+              justify-center 
+              cursor-pointer 
+              hover:opacity-75 
+              transition
+            "
+          >
+            <BiMusic className="text-black" size={20} />
           </button>
         </div>
         <div className="flex justify-between items-center gap-x-4">

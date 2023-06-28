@@ -76,4 +76,5 @@ export interface Playlist {
   user_id: string;
   name: string;
   image_path: string;
+  songs?: Song[] | any[];
 }

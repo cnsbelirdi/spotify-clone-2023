@@ -7,9 +7,6 @@ import { Playlist, Song } from "@/types";
 import useUploadModal from "@/hooks/useUploadModal";
 import { useUser } from "@/hooks/useUser";
 import useAuthModal from "@/hooks/useAuthModal";
-import useSubscribeModal from "@/hooks/useSubscribeModal";
-
-import MediaItem from "./MediaItem";
 import Image from "next/image";
 import Link from "next/link";
 import usePlaylistModal from "@/hooks/usePlaylistModal";
@@ -85,17 +82,10 @@ const Playlists: React.FC<LibraryProps> = ({ playlists }) => {
             <p className="text-neutral-400 text-sm truncate">Playlist</p>
           </div>
         </Link>
-        {/* {songs.map((item) => (
-          <MediaItem
-            onClick={(id: string) => onPlay(id)}
-            key={item.id}
-            data={item}
-          />
-        ))} */}
         {playlists.map((item) => (
           <Link
             key={item.id}
-            href={`/playlist/${item.id}`}
+            href={`/playlist?id=${item.id}`}
             className="
         flex 
         items-center 

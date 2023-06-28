@@ -4,11 +4,13 @@ import getLikedSongs from "@/actions/getLikedSongs";
 import Header from "@/components/Header";
 
 import LikedContent from "./components/LikedContent";
+import getPlaylists from "@/actions/getPlaylists";
 
 export const revalidate = 0;
 
 const Liked = async () => {
   const songs = await getLikedSongs();
+  const userPlaylists = await getPlaylists();
 
   return (
     <div
@@ -57,7 +59,7 @@ const Liked = async () => {
           </div>
         </div>
       </Header>
-      <LikedContent songs={songs} />
+      <LikedContent songs={songs} playlists={userPlaylists} />
     </div>
   );
 };

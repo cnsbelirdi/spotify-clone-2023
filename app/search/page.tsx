@@ -3,6 +3,7 @@ import SearchInput from "@/components/SearchInput";
 import Header from "@/components/Header";
 
 import SearchContent from "./components/SearchContent";
+import getPlaylists from "@/actions/getPlaylists";
 
 export const revalidate = 0;
 
@@ -12,6 +13,7 @@ interface SearchProps {
 
 const Search = async ({ searchParams }: SearchProps) => {
   const songs = await getSongsByTitle(searchParams.title);
+  const userPlaylists = await getPlaylists();
 
   return (
     <div
@@ -30,7 +32,7 @@ const Search = async ({ searchParams }: SearchProps) => {
           <SearchInput />
         </div>
       </Header>
-      <SearchContent songs={songs} />
+      <SearchContent songs={songs} playlists={userPlaylists} />
     </div>
   );
 };

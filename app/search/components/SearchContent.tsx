@@ -1,15 +1,18 @@
 "use client";
 
-import { Song } from "@/types";
+import { Playlist, Song } from "@/types";
 import MediaItem from "@/components/MediaItem";
 import LikeButton from "@/components/LikeButton";
 import useOnPlay from "@/hooks/useOnPlay";
+import DotsButton from "@/components/DotsButton";
+import Dropdown from "@/components/Dropdown";
 
 interface SearchContentProps {
   songs: Song[];
+  playlists: Playlist[];
 }
 
-const SearchContent: React.FC<SearchContentProps> = ({ songs }) => {
+const SearchContent: React.FC<SearchContentProps> = ({ songs, playlists }) => {
   const onPlay = useOnPlay(songs);
 
   if (songs.length === 0) {
@@ -37,6 +40,7 @@ const SearchContent: React.FC<SearchContentProps> = ({ songs }) => {
             <MediaItem onClick={(id: string) => onPlay(id)} data={song} />
           </div>
           <LikeButton songId={song.id} />
+          <Dropdown songId={song.id} playlists={playlists} />
         </div>
       ))}
     </div>

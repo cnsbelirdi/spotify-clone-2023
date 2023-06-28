@@ -2,9 +2,11 @@ import getSongsByUserId from "@/actions/getSongsByUserId";
 import Header from "@/components/Header";
 import React from "react";
 import LibraryContent from "./components/LibraryContent";
+import getPlaylists from "@/actions/getPlaylists";
 
 const Library = async () => {
   const userSongs = await getSongsByUserId();
+  const userPlaylists = await getPlaylists();
   return (
     <div
       className="
@@ -30,7 +32,7 @@ const Library = async () => {
         </div>
       </Header>
       <div className="mt-2 mb-7 px-6">
-        <LibraryContent songs={userSongs} />
+        <LibraryContent songs={userSongs} playlists={userPlaylists} />
       </div>
     </div>
   );
