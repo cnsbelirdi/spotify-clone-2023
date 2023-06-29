@@ -1,8 +1,9 @@
 "use client";
 import useAuthModal from "@/hooks/useAuthModal";
 import usePlaylistModal from "@/hooks/usePlaylistModal";
+import useUploadModal from "@/hooks/useUploadModal";
 import { useUser } from "@/hooks/useUser";
-import { Playlist } from "@/types";
+import { Playlist, Song } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/navigation";
@@ -10,23 +11,26 @@ import { toast } from "react-hot-toast";
 import { BiDotsVerticalRounded, BiChevronRight } from "react-icons/bi";
 
 interface DropdownProps {
-  songId: string;
+  song: Song;
   playlists: Playlist[];
   isPlaylist?: boolean;
   playlistId?: string;
+  isLibrary?: boolean;
 }
 
 const Dropdown: React.FC<DropdownProps> = async ({
-  songId,
+  song,
   playlists,
   isPlaylist = false,
   playlistId,
+  isLibrary = false,
 }) => {
-  const { user } = useUser();
+  const router = useRouter();
   const playlistModal = usePlaylistModal();
   const authModal = useAuthModal();
+  const uploadModal = useUploadModal();
   const { supabaseClient } = useSessionContext();
-  const router = useRouter();
+  const { user } = useUser();
 
   const onClick = () => {
     if (!user) {
@@ -45,12 +49,12 @@ const Dropdown: React.FC<DropdownProps> = async ({
       .from("playlist_songs")
       .select("*")
       .eq("playlist_id", _playlistId)
-      .eq("song_id", songId);
+      .eq("song_id", song.id);
 
     if (!existingData || existingData.length === 0) {
       const { error } = await supabaseClient
         .from("playlist_songs")
-        .insert({ playlist_id: _playlistId, song_id: songId });
+        .insert({ playlist_id: _playlistId, song_id: song.id });
 
       if (error) {
         toast.error(error.message);
@@ -70,7 +74,7 @@ const Dropdown: React.FC<DropdownProps> = async ({
       .from("playlist_songs")
       .delete()
       .eq("playlist_id", playlistId)
-      .eq("song_id", songId);
+      .eq("song_id", song.id);
 
     if (error) {
       toast.error(error.message);
@@ -78,6 +82,13 @@ const Dropdown: React.FC<DropdownProps> = async ({
     }
     toast.success("Song is removed successfully from the playlist");
     router.refresh();
+  };
+
+  const handleUpdateSong = async () => {
+    if (!user) {
+      return authModal.onOpen();
+    }
+    uploadModal.onOpen(song);
   };
 
   return (
@@ -99,6 +110,14 @@ const Dropdown: React.FC<DropdownProps> = async ({
           <DropdownMenu.Item className="text-sm px-3 py-2 outline-none hover:bg-neutral-700 transition cursor-pointer rounded-md">
             Go to song page
           </DropdownMenu.Item>
+          {isLibrary && (
+            <DropdownMenu.Item
+              onClick={handleUpdateSong}
+              className="text-sm px-3 py-2 outline-none hover:bg-neutral-700 transition cursor-pointer rounded-md"
+            >
+              Edit Song
+            </DropdownMenu.Item>
+          )}
           {isPlaylist && (
             <DropdownMenu.Item
               onClick={handleRemoveFromPlaylist}
@@ -142,9 +161,9 @@ const Dropdown: React.FC<DropdownProps> = async ({
               </DropdownMenu.SubContent>
             </DropdownMenu.Portal>
           </DropdownMenu.Sub>
-          <DropdownMenu.Item className="text-sm px-3 py-2 outline-none hover:bg-neutral-700 transition cursor-pointer rounded-md">
+          {/* <DropdownMenu.Item className="text-sm px-3 py-2 outline-none hover:bg-neutral-700 transition cursor-pointer rounded-md">
             Share
-          </DropdownMenu.Item>
+          </DropdownMenu.Item> */}
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>

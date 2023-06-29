@@ -49,7 +49,7 @@ const LikedContent: React.FC<LikedContentProps> = ({ songs, playlists }) => {
             <MediaItem onClick={(id) => onPlay(id)} data={song} />
           </div>
           <LikeButton songId={song.id} />
-          <Dropdown songId={song.id} playlists={playlists} />
+          <Dropdown song={song} playlists={playlists} />
         </div>
       ))}
     </div>

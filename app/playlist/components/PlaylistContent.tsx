@@ -53,7 +53,7 @@ const PlaylistContent: React.FC<PlaylistContentProp> = ({
 
           <LikeButton songId={song.id} />
           <Dropdown
-            songId={song.id}
+            song={song}
             playlists={playlists}
             isPlaylist={playlist.user_id === user?.id}
             playlistId={playlist.id}

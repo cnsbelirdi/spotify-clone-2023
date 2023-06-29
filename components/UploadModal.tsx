@@ -1,7 +1,7 @@
 "use client";
 
 import uniqid from "uniqid";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
@@ -22,14 +22,14 @@ const UploadModal = () => {
   const { user } = useUser();
   const router = useRouter();
 
-  const { register, handleSubmit, reset } = useForm<FieldValues>({
-    defaultValues: {
-      author: "",
-      title: "",
-      song: null,
-      image: null,
-    },
-  });
+  const { register, handleSubmit, reset, setValue } = useForm<FieldValues>();
+
+  const defaultFormValues = {
+    author: "",
+    title: "",
+    song: null,
+    image: null,
+  };
 
   const onChange = (open: boolean) => {
     if (!open) {
@@ -37,7 +37,6 @@ const UploadModal = () => {
       uploadModal.onClose();
     }
   };
-
   const onSubmit: SubmitHandler<FieldValues> = async (values) => {
     try {
       setIsLoading(true);
@@ -45,58 +44,87 @@ const UploadModal = () => {
       const imageFile = values.image?.[0];
       const songFile = values.song?.[0];
 
-      if (!imageFile || !songFile || !user) {
+      if (!uploadModal.song && (!songFile || !user)) {
         toast.error("Missing fields");
         return;
       }
 
       const uniqueID = uniqid();
 
+      const songPath = songFile
+        ? `song-${values.title}-${uniqueID}`
+        : uploadModal.song
+        ? uploadModal.song.song_path
+        : "";
       // Upload song
-      const { data: songData, error: songError } = await supabaseClient.storage
-        .from("songs")
-        .upload(`song-${values.title}-${uniqueID}`, songFile, {
-          cacheControl: "3600",
-          upsert: false,
-        });
+      if (!uploadModal.song && songFile) {
+        const { data: songData, error: songError } =
+          await supabaseClient.storage
+            .from("songs")
+            .upload(songPath, songFile, {
+              cacheControl: "3600",
+              upsert: false,
+            });
 
-      if (songError) {
-        setIsLoading(false);
-        return toast.error("Failed song upload");
+        if (songError) {
+          setIsLoading(false);
+          return toast.error("Failed song upload");
+        }
       }
 
+      const imagePath = imageFile
+        ? `image-${values.name}-${uniqueID}`
+        : uploadModal.song
+        ? uploadModal.song.image_path
+        : "";
+
+      console.log(imagePath);
       // Upload image
-      const { data: imageData, error: imageError } =
-        await supabaseClient.storage
+      if (!uploadModal.song && imageFile) {
+        const { error: imageError } = await supabaseClient.storage
           .from("images")
-          .upload(`image-${values.title}-${uniqueID}`, imageFile, {
+          .upload(imagePath, imageFile, {
             cacheControl: "3600",
             upsert: false,
           });
-
-      if (imageError) {
-        setIsLoading(false);
-        return toast.error("Failed image upload");
+        if (imageError) {
+          setIsLoading(false);
+          return toast.error("Failed image upload");
+        }
       }
 
       // Create record
-      const { error: supabaseError } = await supabaseClient
-        .from("songs")
-        .insert({
-          user_id: user.id,
-          title: values.title,
-          author: values.author,
-          image_path: imageData.path,
-          song_path: songData.path,
-        });
-
-      if (supabaseError) {
-        return toast.error(supabaseError.message);
+      if (uploadModal.song) {
+        const { error: supabaseError } = await supabaseClient
+          .from("songs")
+          .update({
+            title: values.title,
+            author: values.author,
+            image_path: imagePath,
+            song_path: songPath,
+          })
+          .eq("id", uploadModal.song.id);
+        if (supabaseError) {
+          return toast.error(supabaseError.message);
+        }
+        toast.success("Song updated!");
+      } else {
+        const { error: supabaseError } = await supabaseClient
+          .from("songs")
+          .insert({
+            user_id: user?.id,
+            title: values.title,
+            author: values.author,
+            image_path: imagePath,
+            song_path: songPath,
+          });
+        if (supabaseError) {
+          return toast.error(supabaseError.message);
+        }
+        toast.success("Song created!");
       }
-
       router.refresh();
       setIsLoading(false);
-      toast.success("Song created!");
       reset();
       uploadModal.onClose();
     } catch (error) {
@@ -106,18 +134,31 @@ const UploadModal = () => {
     }
   };
 
+  useEffect(() => {
+    if (uploadModal.song) {
+      setValue("author", uploadModal.song.author);
+      setValue("title", uploadModal.song.title);
+    }
+  }, [uploadModal.song, setValue]);
+
   return (
     <Modal
-      title="Add a song"
+      title={uploadModal.song ? "Update the song" : "Create a new song"}
       description="Upload an mp3 file"
       isOpen={uploadModal.isOpen}
       onChange={onChange}
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-4">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-y-4"
+        autoComplete="off"
+      >
         <Input
           id="title"
           disabled={isLoading}
-          {...register("title", { required: true })}
+          {...register("title", {
+            required: true,
+          })}
           placeholder="Song title"
         />
         <Input
@@ -134,7 +175,7 @@ const UploadModal = () => {
             type="file"
             accept=".mp3"
             id="song"
-            {...register("song", { required: true })}
+            {...register("song", { required: uploadModal.song ? false : true })}
           />
         </div>
         <div>
@@ -145,7 +186,7 @@ const UploadModal = () => {
             type="file"
             accept="image/*"
             id="image"
-            {...register("image", { required: true })}
+            {...register("image", { required: false })}
           />
         </div>
         <Button disabled={isLoading} type="submit">

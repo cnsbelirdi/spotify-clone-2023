@@ -13,8 +13,6 @@ interface SongItemProps {
 }
 
 const SongItem: React.FC<SongItemProps> = ({ data, onClick }) => {
-  const imagePath = useLoadImage(data);
-
   return (
     <div
       onClick={() => onClick(data.id)}
@@ -47,7 +45,12 @@ const SongItem: React.FC<SongItemProps> = ({ data, onClick }) => {
       >
         <Image
           className="object-cover"
-          src={imagePath || "/images/music-placeholder.png"}
+          src={
+            data.image_path == ""
+              ? "/images/default-song.png"
+              : // eslint-disable-next-line react-hooks/rules-of-hooks
+                (useLoadImage(data) as string)
+          }
           fill
           alt="Image"
         />
@@ -63,7 +66,7 @@ const SongItem: React.FC<SongItemProps> = ({ data, onClick }) => {
             truncate
           "
         >
-          By {data.author}
+          {data.author}
         </p>
       </div>
       <div

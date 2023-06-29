@@ -4,7 +4,6 @@ import { Playlist, Song } from "@/types";
 import MediaItem from "@/components/MediaItem";
 import LikeButton from "@/components/LikeButton";
 import useOnPlay from "@/hooks/useOnPlay";
-import DotsButton from "@/components/DotsButton";
 import Dropdown from "@/components/Dropdown";
 
 interface SearchContentProps {
@@ -40,7 +39,7 @@ const SearchContent: React.FC<SearchContentProps> = ({ songs, playlists }) => {
             <MediaItem onClick={(id: string) => onPlay(id)} data={song} />
           </div>
           <LikeButton songId={song.id} />
-          <Dropdown songId={song.id} playlists={playlists} />
+          <Dropdown song={song} playlists={playlists} />
         </div>
       ))}
     </div>

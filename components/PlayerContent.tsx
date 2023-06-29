@@ -68,7 +68,6 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
   });
 
   useEffect(() => {
-    console.log("Sound ", sound);
     sound?.play();
 
     return () => {

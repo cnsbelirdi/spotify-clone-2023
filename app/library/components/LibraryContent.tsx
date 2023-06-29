@@ -67,7 +67,7 @@ const LibraryContent: React.FC<LibraryContentProps> = ({
                 <MediaItem onClick={(id: string) => onPlay(id)} data={song} />
               </div>
               <LikeButton songId={song.id} />
-              <Dropdown songId={song.id} playlists={playlists} />
+              <Dropdown song={song} playlists={playlists} isLibrary />
             </div>
           ))}
       </div>
