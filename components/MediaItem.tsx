@@ -5,6 +5,8 @@ import Image from "next/image";
 import useLoadImage from "@/hooks/useLoadImage";
 import { Song } from "@/types";
 import usePlayer from "@/hooks/usePlayer";
+import Link from "next/link";
+import { FaPlay } from "react-icons/fa";
 
 interface MediaItemProps {
   data: Song;
@@ -23,7 +25,6 @@ const MediaItem: React.FC<MediaItemProps> = ({ data, onClick }) => {
 
   return (
     <div
-      onClick={handleClick}
       className="
         flex 
         items-center 
@@ -31,10 +32,20 @@ const MediaItem: React.FC<MediaItemProps> = ({ data, onClick }) => {
         cursor-pointer 
         hover:bg-neutral-800/50 
         w-full 
-        p-2 
+        py-2 
         rounded-md
+        group/play
       "
     >
+      <div
+        onClick={handleClick}
+        className="h-4 w-4 flex items-center justify-center ml-4 "
+      >
+        <FaPlay
+          className="text-neutral-400 hidden group-hover/play:inline transition "
+          size={16}
+        />
+      </div>
       <div
         className="
           relative 
@@ -57,7 +68,15 @@ const MediaItem: React.FC<MediaItemProps> = ({ data, onClick }) => {
         />
       </div>
       <div className="flex flex-col gap-y-1 overflow-hidden">
-        <p className="text-white truncate">{data.title}</p>
+        <Link
+          href={{
+            pathname: "/song",
+            query: { id: data.id },
+          }}
+          className="text-white truncate hover:underline"
+        >
+          {data.title}
+        </Link>
         <p className="text-neutral-400 text-sm truncate">{data.author}</p>
       </div>
     </div>

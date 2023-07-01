@@ -3,8 +3,8 @@ import getPlaylistSongsById from "@/actions/getPlaylistSongsById";
 import PlaylistContent from "./components/PlaylistContent";
 import Header from "@/components/Header";
 import getPlaylistById from "@/actions/getPlaylistById";
-import PlaylistHeader from "@/components/PlaylistHeader";
 import getPlaylists from "@/actions/getPlaylists";
+import PlaylistHeader from "./components/PlaylistHeader";
 
 interface PlaylistProps {
   searchParams: { id: string };
@@ -25,7 +25,7 @@ const Playlist = async ({ searchParams }: PlaylistProps) => {
         overflow-y-auto
       "
     >
-      <Header>
+      <Header className="from-violet-800 ">
         <PlaylistHeader playlist={playlist} />
       </Header>
       <PlaylistContent

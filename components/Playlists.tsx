@@ -85,7 +85,10 @@ const Playlists: React.FC<LibraryProps> = ({ playlists }) => {
         {playlists.map((item) => (
           <Link
             key={item.id}
-            href={`/playlist?id=${item.id}`}
+            href={{
+              pathname: "/playlist",
+              query: { id: item.id },
+            }}
             className="
         flex 
         items-center 

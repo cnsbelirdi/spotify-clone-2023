@@ -3,7 +3,7 @@ export type Json =
   | number
   | boolean
   | null
-  | { [key: string]: Json }
+  | { [key: string]: Json | undefined }
   | Json[]
 
 export interface Database {
@@ -58,6 +58,31 @@ export interface Database {
             foreignKeyName: "liked_songs_user_id_fkey"
             columns: ["user_id"]
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      lyrics: {
+        Row: {
+          id: number
+          lyrics: string | null
+          song_id: number | null
+        }
+        Insert: {
+          id?: number
+          lyrics?: string | null
+          song_id?: number | null
+        }
+        Update: {
+          id?: number
+          lyrics?: string | null
+          song_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lyrics_song_id_fkey"
+            columns: ["song_id"]
+            referencedRelation: "songs"
             referencedColumns: ["id"]
           }
         ]

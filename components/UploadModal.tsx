@@ -80,7 +80,7 @@ const UploadModal = () => {
 
       console.log(imagePath);
       // Upload image
-      if (!uploadModal.song && imageFile) {
+      if (!uploadModal.song || imageFile) {
         const { error: imageError } = await supabaseClient.storage
           .from("images")
           .upload(imagePath, imageFile, {

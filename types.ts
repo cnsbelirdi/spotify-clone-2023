@@ -78,3 +78,10 @@ export interface Playlist {
   image_path: string;
   songs?: Song[] | any[];
 }
+
+export interface Lyrics {
+  id: string;
+  lyrics: string;
+  song_id: string;
+  lines?: string[] | null;
+}

@@ -4,6 +4,8 @@ import React from "react";
 import LibraryContent from "./components/LibraryContent";
 import getPlaylists from "@/actions/getPlaylists";
 
+export const revalidate = 0;
+
 const Library = async () => {
   const userSongs = await getSongsByUserId();
   const userPlaylists = await getPlaylists();
@@ -31,7 +33,7 @@ const Library = async () => {
           </h1>
         </div>
       </Header>
-      <div className="mt-2 mb-7 px-6">
+      <div className="mt-2 mb-7 px-4">
         <LibraryContent songs={userSongs} playlists={userPlaylists} />
       </div>
     </div>

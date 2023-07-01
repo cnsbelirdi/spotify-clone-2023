@@ -40,7 +40,7 @@ const LibraryContent: React.FC<LibraryContentProps> = ({
 
   return (
     <div className="flex flex-col gap-y-2">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center pl-4">
         <h1 className="text-white text-2xl font-semibold">Songs</h1>
         <div
           onClick={newSong}
