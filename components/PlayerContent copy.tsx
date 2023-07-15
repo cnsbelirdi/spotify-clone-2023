@@ -1,17 +1,15 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { BsPauseFill, BsPlayFill } from "react-icons/bs";
 import { HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
 import { AiFillStepBackward, AiFillStepForward } from "react-icons/ai";
 import { Howl } from "howler";
 
 import { Song } from "@/types";
-import { formatDuration } from "@/libs/helpers";
 import usePlayer from "@/hooks/usePlayer";
 
 import LikeButton from "./LikeButton";
 import MediaItem from "./MediaItem";
 import Slider from "./Slider";
-import DurationSlider from "./DurationSlider";
 
 interface PlayerContentProps {
   song: Song;
@@ -20,11 +18,11 @@ interface PlayerContentProps {
 
 const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
   const player = usePlayer();
-  const [sound, setSound] = useState<Howl | null>(null);
   const [volume, setVolume] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [sound, setSound] = useState<Howl | null>(null);
   const [animationFrameId, setAnimationFrameId] = useState<number | null>(null);
 
   const Icon = isPlaying ? BsPauseFill : BsPlayFill;
@@ -61,45 +59,25 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
   };
 
   useEffect(() => {
-    if (songUrl) {
-      const newSound = new Howl({
-        src: [songUrl],
-        volume: volume,
-        format: ["mp3"],
-        onplay: () => {
-          newSound.off("end");
-          setIsPlaying(true);
-        },
-        onend: () => {
-          setIsPlaying(false);
-          onPlayNext();
-        },
-        onpause: () => setIsPlaying(false),
-      });
+    const newSound = new Howl({
+      src: [songUrl],
+      volume: volume,
+      format: ["mp3"],
+      onplay: () => setIsPlaying(true),
+      onend: () => {
+        setIsPlaying(false);
+        onPlayNext();
+      },
+      onpause: () => setIsPlaying(false),
+    });
 
-      setSound(newSound);
-      setDuration(newSound.duration());
-
-      return () => {
-        newSound.unload();
-      };
-    } else {
-      setSound(null);
-      setDuration(0);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onPlayNext, songUrl]);
-
-  useEffect(() => {
-    if (sound) {
-      sound.play();
-      setDuration(sound.duration());
-    }
+    setSound(newSound);
+    setDuration(newSound.duration());
 
     return () => {
-      sound?.unload();
+      newSound.unload();
     };
-  }, [sound]);
+  }, [onPlayNext, songUrl, volume]);
 
   const handlePlay = () => {
     if (!isPlaying) {
@@ -112,18 +90,8 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
   const toggleMute = () => {
     if (volume === 0) {
       setVolume(1);
-      sound?.volume(1);
     } else {
       setVolume(0);
-      sound?.volume(0);
-    }
-  };
-
-  const handleVolumeChange = (value: number) => {
-    setVolume(value);
-
-    if (sound) {
-      sound.volume(value);
     }
   };
 
@@ -144,11 +112,11 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, [animationFrameId, isPlaying, sound, setCurrentTime]);
+  }, [animationFrameId, isPlaying, sound]);
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 h-full items-center justify-between">
-      <div className="flex w-full ">
+    <div className="grid grid-cols-2 md:grid-cols-3 h-full">
+      <div className="flex w-full justify-start">
         <div className="flex items-center gap-x-4">
           <MediaItem data={song} />
           <LikeButton songId={song.id} />
@@ -164,17 +132,9 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
         </div>
       </div>
 
-      <div className="hidden md:flex flex-col">
-        <div className="flex items-center gap-x-3">
-          <p>{formatDuration(currentTime)}</p>
-          <DurationSlider
-            value={currentTime}
-            maxValue={sound ? sound.duration() : 1}
-            onChange={(value) => {
-              sound?.seek(value);
-            }}
-          />
-          <p>{formatDuration(sound ? sound.duration() : 0)}</p>
+      <div className="flex flex-col">
+        <div>
+          Duration: {currentTime.toFixed(2)} / {duration.toFixed(2)}
         </div>
         <div className="hidden h-full md:flex justify-center items-center w-full max-w-[722px] gap-x-6">
           <AiFillStepBackward
@@ -196,17 +156,14 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
         </div>
       </div>
 
-      <div className="hidden md:flex justify-end">
+      <div className="hidden md:flex w-full justify-end pr-2">
         <div className="flex items-center gap-x-2 w-[120px]">
           <VolumeIcon
             onClick={toggleMute}
             className="cursor-pointer"
             size={34}
           />
-          <Slider
-            value={volume}
-            onChange={(value) => handleVolumeChange(value)}
-          />
+          <Slider value={volume} onChange={(value) => setVolume(value)} />
         </div>
       </div>
     </div>

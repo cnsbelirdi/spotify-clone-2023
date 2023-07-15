@@ -11,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import usePlaylistModal from "@/hooks/usePlaylistModal";
 import useLoadImage from "@/hooks/useLoadImage";
+import PlaylistItem from "./PlaylistItem";
 
 interface LibraryProps {
   playlists: Playlist[];
@@ -83,49 +84,7 @@ const Playlists: React.FC<LibraryProps> = ({ playlists }) => {
           </div>
         </Link>
         {playlists.map((item) => (
-          <Link
-            key={item.id}
-            href={{
-              pathname: "/playlist",
-              query: { id: item.id },
-            }}
-            className="
-        flex 
-        items-center 
-        gap-x-3 
-        cursor-pointer 
-        hover:bg-neutral-800/50 
-        w-full 
-        p-2 
-        rounded-md
-      "
-          >
-            <div
-              className="
-          relative 
-          rounded-md 
-          min-h-[48px] 
-          min-w-[48px] 
-          overflow-hidden
-        "
-            >
-              <Image
-                fill
-                src={
-                  item.image_path == ""
-                    ? "/images/default-playlist.png"
-                    : // eslint-disable-next-line react-hooks/rules-of-hooks
-                      (useLoadImage(item) as string)
-                }
-                alt="MediaItem"
-                className="object-cover"
-              />
-            </div>
-            <div className="flex flex-col gap-y-1 overflow-hidden">
-              <p className="text-white truncate">{item.name}</p>
-              <p className="text-neutral-400 text-sm truncate">Playlist</p>
-            </div>
-          </Link>
+          <PlaylistItem data={item} key={item.id} />
         ))}
       </div>
     </div>

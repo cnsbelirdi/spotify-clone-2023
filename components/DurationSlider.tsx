@@ -2,12 +2,17 @@
 
 import * as RadixSlider from "@radix-ui/react-slider";
 
-interface SlideProps {
+interface DurationSliderProps {
   value?: number;
+  maxValue?: number;
   onChange?: (value: number) => void;
 }
 
-const Slider: React.FC<SlideProps> = ({ value = 1, onChange }) => {
+const DurationSlider: React.FC<DurationSliderProps> = ({
+  value = 0,
+  onChange,
+  maxValue,
+}) => {
   const handleChange = (newValue: number[]) => {
     onChange?.(newValue[0]);
   };
@@ -21,13 +26,12 @@ const Slider: React.FC<SlideProps> = ({ value = 1, onChange }) => {
         select-none 
         touch-none 
         w-full 
-        h-10
+        h-fit
       "
-      defaultValue={[1]}
+      defaultValue={[value]}
       value={[value]}
       onValueChange={handleChange}
-      max={1}
-      step={0.1}
+      max={maxValue}
       aria-label="Volume"
     >
       <RadixSlider.Track
@@ -36,24 +40,24 @@ const Slider: React.FC<SlideProps> = ({ value = 1, onChange }) => {
           relative 
           grow 
           rounded-full 
-          h-[3px]
+          h-[5px]
         "
       >
         <RadixSlider.Range
           className="
             absolute 
-            bg-white 
+            bg-emerald-600 
             rounded-full 
             h-full
           "
         />
       </RadixSlider.Track>
       <RadixSlider.Thumb
-        className="block w-2 h-2 bg-white rounded-full"
-        aria-label="Volume"
+        className="block w-5 h-5 bg-white rounded-full"
+        aria-label="Duration"
       />
     </RadixSlider.Root>
   );
 };
 
-export default Slider;
+export default DurationSlider;

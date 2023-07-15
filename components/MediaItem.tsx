@@ -33,6 +33,7 @@ const MediaItem: React.FC<MediaItemProps> = ({ data, onClick }) => {
         hover:bg-neutral-800/50 
         w-full 
         py-2 
+        pr-4
         rounded-md
         group/play
       "
