@@ -1,8 +1,14 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
-import { BsPauseFill, BsPlayFill } from "react-icons/bs";
+"use client";
+
+import {
+  BsPauseFill,
+  BsPlayFill,
+  BsArrowRepeat,
+  BsShuffle,
+} from "react-icons/bs";
 import { HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
 import { AiFillStepBackward, AiFillStepForward } from "react-icons/ai";
-import { Howl } from "howler";
+import { useAudio } from "react-use";
 
 import { Song } from "@/types";
 import { formatDuration } from "@/libs/helpers";
@@ -12,6 +18,8 @@ import LikeButton from "./LikeButton";
 import MediaItem from "./MediaItem";
 import Slider from "./Slider";
 import DurationSlider from "./DurationSlider";
+import { useEffect, useState } from "react";
+import { twMerge } from "tailwind-merge";
 
 interface PlayerContentProps {
   song: Song;
@@ -20,17 +28,9 @@ interface PlayerContentProps {
 
 const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
   const player = usePlayer();
-  const [sound, setSound] = useState<Howl | null>(null);
-  const [volume, setVolume] = useState(1);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [animationFrameId, setAnimationFrameId] = useState<number | null>(null);
+  const [isLooping, setIsLooping] = useState(false);
 
-  const Icon = isPlaying ? BsPauseFill : BsPlayFill;
-  const VolumeIcon = volume === 0 ? HiSpeakerXMark : HiSpeakerWave;
-
-  const onPlayNext = useCallback(() => {
+  const onPlayNext = () => {
     if (player.ids.length === 0) {
       return;
     }
@@ -43,7 +43,7 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
     }
 
     player.setId(nextSong);
-  }, [player]);
+  };
 
   const onPlayPrevious = () => {
     if (player.ids.length === 0) {
@@ -60,143 +60,124 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
     player.setId(previousSong);
   };
 
-  useEffect(() => {
-    if (songUrl) {
-      const newSound = new Howl({
-        src: [songUrl],
-        volume: volume,
-        format: ["mp3"],
-        onplay: () => {
-          newSound.off("end");
-          setIsPlaying(true);
-        },
-        onend: () => {
-          setIsPlaying(false);
-          onPlayNext();
-        },
-        onpause: () => setIsPlaying(false),
-      });
-
-      setSound(newSound);
-      setDuration(newSound.duration());
-
-      return () => {
-        newSound.unload();
-      };
-    } else {
-      setSound(null);
-      setDuration(0);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onPlayNext, songUrl]);
+  const [audio, state, controls, ref] = useAudio({
+    src: songUrl,
+    autoPlay: true,
+    onEnded: onPlayNext,
+  });
+  const Icon = state.playing ? BsPauseFill : BsPlayFill;
+  const VolumeIcon = state.volume === 0 ? HiSpeakerXMark : HiSpeakerWave;
 
   useEffect(() => {
-    if (sound) {
-      sound.play();
-      setDuration(sound.duration());
+    if (ref.current) {
+      ref.current.loop = isLooping;
     }
-
-    return () => {
-      sound?.unload();
-    };
-  }, [sound]);
+  }, [isLooping, ref]);
 
   const handlePlay = () => {
-    if (!isPlaying) {
-      sound?.play();
+    if (!state.playing) {
+      controls.play();
     } else {
-      sound?.pause();
+      controls.pause();
     }
   };
 
   const toggleMute = () => {
-    if (volume === 0) {
-      setVolume(1);
-      sound?.volume(1);
+    if (state.volume === 0) {
+      controls.volume(1);
     } else {
-      setVolume(0);
-      sound?.volume(0);
+      controls.volume(0);
     }
   };
 
-  const handleVolumeChange = (value: number) => {
-    setVolume(value);
-
-    if (sound) {
-      sound.volume(value);
-    }
+  const toggleLoop = () => {
+    setIsLooping(!isLooping);
   };
-
-  useEffect(() => {
-    const updateCurrentTime = () => {
-      setCurrentTime(sound?.seek() || 0);
-      if (isPlaying) {
-        setAnimationFrameId(requestAnimationFrame(updateCurrentTime));
-      }
-    };
-
-    if (isPlaying && sound) {
-      setAnimationFrameId(requestAnimationFrame(updateCurrentTime));
-    }
-
-    return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
-    };
-  }, [animationFrameId, isPlaying, sound, setCurrentTime]);
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 h-full items-center justify-between">
-      <div className="flex w-full ">
+    <div className="grid grid-cols-2 md:grid-cols-3 h-full">
+      <div className="flex w-full justify-start">
         <div className="flex items-center gap-x-4">
-          <MediaItem data={song} />
+          <MediaItem data={song} isPlayer />
           <LikeButton songId={song.id} />
         </div>
       </div>
 
-      <div className="flex md:hidden col-auto w-full justify-end items-center">
+      <div
+        className="
+            flex 
+            md:hidden 
+            col-auto 
+            w-full 
+            justify-end 
+            items-center
+          "
+      >
         <div
           onClick={handlePlay}
-          className="h-10 w-10 flex items-center justify-center rounded-full bg-white p-1 cursor-pointer"
+          className="
+              h-10
+              w-10
+              flex 
+              items-center 
+              justify-center 
+              rounded-full 
+              bg-white 
+              p-1 
+              cursor-pointer
+            "
         >
           <Icon size={30} className="text-black" />
         </div>
       </div>
-
       <div className="hidden md:flex flex-col">
-        <div className="flex items-center gap-x-3">
-          <p>{formatDuration(currentTime)}</p>
-          <DurationSlider
-            value={currentTime}
-            maxValue={sound ? sound.duration() : 1}
-            onChange={(value) => {
-              sound?.seek(value);
-            }}
-          />
-          <p>{formatDuration(sound ? sound.duration() : 0)}</p>
-        </div>
+        <div>{audio}</div>
         <div className="hidden h-full md:flex justify-center items-center w-full max-w-[722px] gap-x-6">
+          <BsShuffle
+            size={24}
+            className="text-neutral-400 cursor-pointer hover:text-white transition"
+          />
           <AiFillStepBackward
             onClick={onPlayPrevious}
-            size={30}
+            size={24}
             className="text-neutral-400 cursor-pointer hover:text-white transition"
           />
           <div
             onClick={handlePlay}
-            className="flex items-center justify-center h-10 w-10 rounded-full bg-white p-1 cursor-pointer"
+            className="flex items-center justify-center h-10 w-10 rounded-full bg-white p-1 cursor-pointer active:scale-90 transition-all"
           >
             <Icon size={30} className="text-black" />
           </div>
           <AiFillStepForward
             onClick={onPlayNext}
-            size={30}
+            size={24}
             className="text-neutral-400 cursor-pointer hover:text-white transition"
           />
+          <BsArrowRepeat
+            onClick={toggleLoop}
+            size={24}
+            className={twMerge(
+              "cursor-pointer transition",
+              isLooping
+                ? "text-emerald-600 hover:text-emerald-700"
+                : "text-neutral-400 hover:text-white"
+            )}
+          />
+        </div>
+        <div className="flex items-center gap-x-3">
+          <p>{formatDuration(state.time)}</p>
+          <DurationSlider
+            value={state.time}
+            maxValue={songUrl ? state.duration : 1}
+            onChange={(value) => {
+              controls.seek(value);
+            }}
+          />
+          <p>{formatDuration(songUrl ? state.duration : 0)}</p>
         </div>
       </div>
 
-      <div className="hidden md:flex justify-end">
+      <div className="hidden md:flex w-full justify-end pr-2">
         <div className="flex items-center gap-x-2 w-[120px]">
           <VolumeIcon
             onClick={toggleMute}
@@ -204,8 +185,8 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
             size={34}
           />
           <Slider
-            value={volume}
-            onChange={(value) => handleVolumeChange(value)}
+            value={state.volume}
+            onChange={(value) => controls.volume(value)}
           />
         </div>
       </div>

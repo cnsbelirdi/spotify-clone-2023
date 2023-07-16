@@ -40,7 +40,7 @@ const DurationSlider: React.FC<DurationSliderProps> = ({
           relative 
           grow 
           rounded-full 
-          h-[5px]
+          h-[4px]
         "
       >
         <RadixSlider.Range
@@ -53,7 +53,7 @@ const DurationSlider: React.FC<DurationSliderProps> = ({
         />
       </RadixSlider.Track>
       <RadixSlider.Thumb
-        className="block w-5 h-5 bg-white rounded-full"
+        className="block w-3 h-3 bg-white rounded-full"
         aria-label="Duration"
       />
     </RadixSlider.Root>

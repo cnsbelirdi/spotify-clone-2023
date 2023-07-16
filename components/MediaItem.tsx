@@ -7,13 +7,15 @@ import { Song } from "@/types";
 import usePlayer from "@/hooks/usePlayer";
 import Link from "next/link";
 import { FaPlay } from "react-icons/fa";
+import { twMerge } from "tailwind-merge";
 
 interface MediaItemProps {
   data: Song;
   onClick?: (id: string) => void;
+  isPlayer?: boolean;
 }
 
-const MediaItem: React.FC<MediaItemProps> = ({ data, onClick }) => {
+const MediaItem: React.FC<MediaItemProps> = ({ data, onClick, isPlayer }) => {
   const player = usePlayer();
   const handleClick = () => {
     if (onClick) {
@@ -32,15 +34,17 @@ const MediaItem: React.FC<MediaItemProps> = ({ data, onClick }) => {
         cursor-pointer 
         hover:bg-neutral-800/50 
         w-full 
-        py-2 
-        pr-4
+        p-2
         rounded-md
         group/play
       "
     >
       <div
         onClick={handleClick}
-        className="h-4 w-4 flex items-center justify-center ml-4 "
+        className={twMerge(
+          "h-4 w-4 items-center justify-center ml-4",
+          isPlayer ? "hidden" : "flex"
+        )}
       >
         <FaPlay
           className="text-neutral-400 hidden group-hover/play:inline transition "
