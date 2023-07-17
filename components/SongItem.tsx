@@ -14,7 +14,6 @@ interface SongItemProps {
 }
 
 const SongItem: React.FC<SongItemProps> = ({ data, onClick }) => {
-  const imagePath = useLoadImage(data);
   return (
     <div
       className="
@@ -48,7 +47,12 @@ const SongItem: React.FC<SongItemProps> = ({ data, onClick }) => {
           className="object-cover"
           fill
           alt="Image"
-          src={imagePath || "/images/music-placeholder.png"}
+          src={
+            data.image_path == ""
+              ? "/images/default-song.png"
+              : // eslint-disable-next-line react-hooks/rules-of-hooks
+                (useLoadImage(data) as string)
+          }
         />
       </div>
       <div className="flex flex-col items-start w-full pt-4 gap-y-1">
