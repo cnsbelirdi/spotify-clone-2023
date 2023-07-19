@@ -96,6 +96,16 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 h-full">
+      <div className="md:hidden absolute inset-0 -top-2">
+        <DurationSlider
+          value={state.time}
+          maxValue={songUrl ? state.duration : 1}
+          onChange={(value) => {
+            controls.seek(value);
+          }}
+          isMobile
+        />
+      </div>
       <div className="flex w-full justify-start">
         <div className="flex items-center gap-x-4">
           <MediaItem data={song} isPlayer />
@@ -111,6 +121,7 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
             w-full 
             justify-end 
             items-center
+              gap-x-4
           "
       >
         <div
@@ -129,6 +140,11 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
         >
           <Icon size={30} className="text-black" />
         </div>
+        <AiFillStepForward
+          onClick={onPlayNext}
+          size={24}
+          className="text-neutral-400 cursor-pointer hover:text-white transition"
+        />
       </div>
       <div className="hidden md:flex flex-col">
         <div>{audio}</div>

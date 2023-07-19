@@ -1,17 +1,20 @@
 "use client";
 
 import * as RadixSlider from "@radix-ui/react-slider";
+import { twMerge } from "tailwind-merge";
 
 interface DurationSliderProps {
   value?: number;
   maxValue?: number;
   onChange?: (value: number) => void;
+  isMobile?: boolean;
 }
 
 const DurationSlider: React.FC<DurationSliderProps> = ({
   value = 0,
   onChange,
   maxValue,
+  isMobile = false,
 }) => {
   const handleChange = (newValue: number[]) => {
     onChange?.(newValue[0]);
@@ -35,13 +38,10 @@ const DurationSlider: React.FC<DurationSliderProps> = ({
       aria-label="Volume"
     >
       <RadixSlider.Track
-        className="
-          bg-neutral-600 
-          relative 
-          grow 
-          rounded-full 
-          h-[4px]
-        "
+        className={twMerge(
+          "bg-neutral-600 relative grow rounded-full cursor-pointer",
+          isMobile ? "h-0.5" : "h-1"
+        )}
       >
         <RadixSlider.Range
           className="
@@ -52,10 +52,12 @@ const DurationSlider: React.FC<DurationSliderProps> = ({
           "
         />
       </RadixSlider.Track>
-      <RadixSlider.Thumb
-        className="block w-3 h-3 bg-white rounded-full"
-        aria-label="Duration"
-      />
+      {!isMobile && (
+        <RadixSlider.Thumb
+          className="block w-3 h-3 bg-white rounded-full cursor-pointer"
+          aria-label="Duration"
+        />
+      )}
     </RadixSlider.Root>
   );
 };
