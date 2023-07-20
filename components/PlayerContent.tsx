@@ -96,7 +96,7 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 h-full">
-      <div className="md:hidden absolute inset-0 -top-2">
+      <div className="md:hidden h-fit absolute inset-0 -top-2">
         <DurationSlider
           value={state.time}
           maxValue={songUrl ? state.duration : 1}
