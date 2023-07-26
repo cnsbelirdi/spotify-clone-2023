@@ -11,6 +11,7 @@ export const revalidate = 0;
 export default async function Home() {
   const songs = await getSongs();
   const playlists = await getSpotifyPlaylists();
+
   return (
     <div
       className="
