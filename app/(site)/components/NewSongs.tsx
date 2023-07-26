@@ -4,11 +4,11 @@ import { Song } from "@/types";
 import useOnPlay from "@/hooks/useOnPlay";
 import SongItem from "@/components/SongItem";
 
-interface PageContentProps {
+interface NewSongsProps {
   songs: Song[];
 }
 
-const PageContent: React.FC<PageContentProps> = ({ songs }) => {
+const NewSongs: React.FC<NewSongsProps> = ({ songs }) => {
   const onPlay = useOnPlay(songs);
 
   if (songs.length === 0) {
@@ -16,8 +16,12 @@ const PageContent: React.FC<PageContentProps> = ({ songs }) => {
   }
 
   return (
-    <div
-      className="
+    <>
+      <div className="flex justify-between items-center">
+        <h1 className="text-white text-2xl font-semibold">Newest songs</h1>
+      </div>
+      <div
+        className="
         grid 
         grid-cols-2 
         sm:grid-cols-3 
@@ -28,16 +32,17 @@ const PageContent: React.FC<PageContentProps> = ({ songs }) => {
         gap-4 
         mt-4
       "
-    >
-      {songs.map((item) => (
-        <SongItem
-          onClick={(id: string) => onPlay(id)}
-          key={item.id}
-          data={item}
-        />
-      ))}
-    </div>
+      >
+        {songs.map((item) => (
+          <SongItem
+            onClick={(id: string) => onPlay(id)}
+            key={item.id}
+            data={item}
+          />
+        ))}
+      </div>
+    </>
   );
 };
 
-export default PageContent;
+export default NewSongs;

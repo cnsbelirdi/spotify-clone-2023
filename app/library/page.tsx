@@ -6,7 +6,7 @@ import getPlaylists from "@/actions/getPlaylists";
 
 export const revalidate = 0;
 
-const Library = async () => {
+export default async function Library() {
   const userSongs = await getSongsByUserId();
   const userPlaylists = await getPlaylists();
   return (
@@ -38,6 +38,4 @@ const Library = async () => {
       </div>
     </div>
   );
-};
-
-export default Library;
+}

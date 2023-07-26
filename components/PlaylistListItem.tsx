@@ -1,19 +1,17 @@
 "use client";
-
 import Image from "next/image";
 
 import useLoadImage from "@/hooks/useLoadImage";
-import { Song } from "@/types";
+import { Playlist } from "@/types";
 
 import PlayButton from "./PlayButton";
 import Link from "next/link";
 
-interface SongItemProps {
-  data?: Song;
-  onClick: (id: string) => void;
+interface PlaylistListItemProps {
+  data?: Playlist;
 }
 
-const SongItem: React.FC<SongItemProps> = ({ data, onClick }) => {
+const PlaylistListItem: React.FC<PlaylistListItemProps> = async ({ data }) => {
   return (
     <div
       className="
@@ -58,12 +56,12 @@ const SongItem: React.FC<SongItemProps> = ({ data, onClick }) => {
       <div className="flex flex-col items-start w-full pt-4 gap-y-1">
         <Link
           href={{
-            pathname: "/song",
+            pathname: "/playlist",
             query: { id: data?.id },
           }}
           className="font-semibold truncate w-full hover:underline"
         >
-          {data?.title}
+          {data?.name}
         </Link>
         <p
           className="
@@ -74,7 +72,7 @@ const SongItem: React.FC<SongItemProps> = ({ data, onClick }) => {
             truncate
           "
         >
-          {data?.author}
+          Spotify
         </p>
       </div>
       <div
@@ -83,7 +81,7 @@ const SongItem: React.FC<SongItemProps> = ({ data, onClick }) => {
           bottom-24 
           right-5
         "
-        onClick={() => onClick(data?.id as string)}
+        onClick={() => {} /* onClick(data?.id as string) */}
       >
         <PlayButton />
       </div>
@@ -91,4 +89,4 @@ const SongItem: React.FC<SongItemProps> = ({ data, onClick }) => {
   );
 };
 
-export default SongItem;
+export default PlaylistListItem;

@@ -53,3 +53,34 @@ export const formatDuration = (duration: number) => {
   const format = formattedMinutes + ":" + formattedSeconds;
   return format;
 };
+
+export const turkishCharacterToEnglish = (input: string): string => {
+  const turkishChars: { [key: string]: string } = {
+    ç: "c",
+    Ç: "C",
+    ğ: "g",
+    Ğ: "G",
+    ı: "i",
+    i: "i",
+    İ: "I",
+    I: "I",
+    ö: "o",
+    Ö: "O",
+    ş: "s",
+    Ş: "S",
+    ü: "u",
+    Ü: "U",
+  };
+
+  let convertedString = "";
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+    if (turkishChars[char]) {
+      convertedString += turkishChars[char];
+    } else {
+      convertedString += char;
+    }
+  }
+
+  return convertedString;
+};

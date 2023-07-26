@@ -11,7 +11,7 @@ import usePlayer from "@/hooks/usePlayer";
 import SidebarItem from "./SidebarItem";
 import Box from "./Box";
 import Playlists from "./Playlists";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 interface SidebarProps {
   children: React.ReactNode;
@@ -21,6 +21,12 @@ interface SidebarProps {
 const Sidebar = ({ children, playlists }: SidebarProps) => {
   const pathname = usePathname();
   const player = usePlayer();
+
+  useEffect(() => {
+    if (!localStorage.getItem("volume")) {
+      localStorage.setItem("volume", "1");
+    }
+  }, []);
 
   const routes = useMemo(
     () => [

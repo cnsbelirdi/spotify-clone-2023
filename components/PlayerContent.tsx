@@ -29,6 +29,7 @@ interface PlayerContentProps {
 const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
   const player = usePlayer();
   const [isLooping, setIsLooping] = useState(false);
+  const [volume, setVolume] = useState(localStorage.getItem("volume") || "1");
 
   const onPlayNext = () => {
     if (player.ids.length === 0) {
@@ -74,6 +75,12 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
     }
   }, [isLooping, ref]);
 
+  useEffect(() => {
+    controls.volume(parseFloat(volume));
+    localStorage.setItem("volume", volume);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [volume]);
+
   const handlePlay = () => {
     if (!state.playing) {
       controls.play();
@@ -85,8 +92,10 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
   const toggleMute = () => {
     if (state.volume === 0) {
       controls.volume(1);
+      setVolume("1");
     } else {
       controls.volume(0);
+      setVolume("0");
     }
   };
 
@@ -202,7 +211,10 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
           />
           <Slider
             value={state.volume}
-            onChange={(value) => controls.volume(value)}
+            onChange={(value) => {
+              controls.volume(value);
+              setVolume(value.toString());
+            }}
           />
         </div>
       </div>

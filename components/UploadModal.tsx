@@ -13,6 +13,7 @@ import { useUser } from "@/hooks/useUser";
 import Modal from "./Modal";
 import Input from "./Input";
 import Button from "./Button";
+import { turkishCharacterToEnglish } from "@/libs/helpers";
 
 const UploadModal = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -52,10 +53,11 @@ const UploadModal = () => {
       const uniqueID = uniqid();
 
       const songPath = songFile
-        ? `song-${values.title}-${uniqueID}`
+        ? `song-${turkishCharacterToEnglish(values.title)}-${uniqueID}`
         : uploadModal.song
         ? uploadModal.song.song_path
         : "";
+
       // Upload song
       if (!uploadModal.song && songFile) {
         const { data: songData, error: songError } =
@@ -73,14 +75,13 @@ const UploadModal = () => {
       }
 
       const imagePath = imageFile
-        ? `image-${values.name}-${uniqueID}`
+        ? `image-${uniqueID}`
         : uploadModal.song
         ? uploadModal.song.image_path
         : "";
 
-      console.log(imagePath);
       // Upload image
-      if (uploadModal.song || imageFile) {
+      if (imageFile) {
         const { error: imageError } = await supabaseClient.storage
           .from("images")
           .upload(imagePath, imageFile, {
